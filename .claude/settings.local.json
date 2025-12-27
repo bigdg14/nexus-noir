@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(find:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(cat:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill /F /PID 86272)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(taskkill:*)",
+      "Bash(ping:*)",
+      "Bash(powershell:*)",
+      "Bash(ls:*)",
+      "Bash(\"c:\\WorkingFolder\\Projects\\SocialNetwork\\src\\app\\(app)\\messages\\page.tsx\")",
+      "Bash(npx tsc:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run db:seed:*)",
+      "Bash(psql:*)",
+      "Bash(npm run db:push:*)",
+      "Bash(dir:*)",
+      "Bash(rd /s /q \"c:\\WorkingFolder\\Projects\\SocialNetwork\\src\\app\\api\\posts\\[postId]\")",
+      "Bash(cmd /c \"rmdir /s /q c:\\WorkingFolder\\Projects\\SocialNetwork\\src\\app\\api\\posts\\[postId]\")",
+      "Bash(cmd /c \"rmdir /s /q c:\\WorkingFolder\\Projects\\SocialNetwork\\.next\")",
+      "Bash(cmd /c:*)",
+      "Bash(timeout /t 2 /nobreak)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx shadcn@latest init)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,158 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { CommentSection } from './comment-section'
+import { Heart, MessageCircle, Share2 } from 'lucide-react'
+import { formatDate, formatCount } from '@/lib/utils'
+
+interface PostCardProps {
+  post: {
+    id: string
+    content: string
+    mediaUrls: string[]
+    mediaType: string
+    likeCount: number
+    commentCount: number
+    hasLiked: boolean
+    createdAt: string
+    author: {
+      id: string
+      username: string
+      displayName: string
+      avatar?: string | null
+    }
+  }
+  onLike?: (postId: string, liked: boolean) => void
+}
+
+export function PostCard({ post, onLike }: PostCardProps) {
+  const [liked, setLiked] = useState(post.hasLiked)
+  const [likeCount, setLikeCount] = useState(post.likeCount)
+  const [commentCount, setCommentCount] = useState(post.commentCount)
+  const [showComments, setShowComments] = useState(false)
+
+  const handleLike = async () => {
+    const newLiked = !liked
+    setLiked(newLiked)
+    setLikeCount((prev) => (newLiked ? prev + 1 : prev - 1))
+
+    if (onLike) {
+      onLike(post.id, newLiked)
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${post.id}/like`, {
+        method: newLiked ? 'POST' : 'DELETE',
+      })
+
+      if (!response.ok) {
+        // Revert on error
+        setLiked(!newLiked)
+        setLikeCount((prev) => (newLiked ? prev - 1 : prev + 1))
+      }
+    } catch (error) {
+      // Revert on error
+      setLiked(!newLiked)
+      setLikeCount((prev) => (newLiked ? prev - 1 : prev + 1))
+    }
+  }
+
+  const initials = post.author.displayName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+
+  return (
+    <div className="bg-white dark:bg-zinc-900 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+      <div className="flex items-start space-x-3">
+        <Link href={`/users/${post.author.id}`}>
+          <Avatar className="w-12 h-12">
+            <AvatarImage src={post.author.avatar || undefined} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        </Link>
+
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <Link
+                href={`/users/${post.author.id}`}
+                className="font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+              >
+                {post.author.displayName}
+              </Link>
+              <p className="text-sm text-gray-500 dark:text-gray-400">@{post.author.username}</p>
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(post.createdAt)}</span>
+          </div>
+
+          <div className="mt-3">
+            <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{post.content}</p>
+
+            {post.mediaUrls.length > 0 && (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {post.mediaUrls.map((url, index) => (
+                  <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                    {post.mediaType === 'IMAGE' ? (
+                      <Image
+                        src={url}
+                        alt="Post media"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <video
+                        src={url}
+                        controls
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 flex items-center space-x-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={liked ? 'text-red-500' : ''}
+            >
+              <Heart className={`w-5 h-5 mr-2 ${liked ? 'fill-current' : ''}`} />
+              {formatCount(likeCount)}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowComments(!showComments)}
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              {formatCount(commentCount)}
+            </Button>
+
+            <Button variant="ghost" size="sm" disabled>
+              <Share2 className="w-5 h-5 mr-2" />
+              Share
+            </Button>
+          </div>
+
+          <CommentSection
+            postId={post.id}
+            commentCount={commentCount}
+            showComments={showComments}
+            onToggleComments={() => setShowComments(!showComments)}
+            onCommentAdded={() => setCommentCount(prev => prev + 1)}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
