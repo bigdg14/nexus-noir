@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { hashPassword, validatePassword } from '@/lib/auth/password'
 import { createEmailVerificationToken } from '@/lib/auth/tokens'

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { createPasswordResetToken } from '@/lib/auth/tokens'
 import { sendPasswordResetEmail } from '@/lib/auth/email'
