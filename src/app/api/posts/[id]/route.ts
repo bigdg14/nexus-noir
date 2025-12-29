@@ -44,7 +44,7 @@ export async function GET(
     }
 
     // Get reaction counts by type
-    const reactionCounts = await prisma.reaction.groupBy({
+    const reactionCounts = await prisma.postReaction.groupBy({
       by: ['type'],
       where: { postId: params.id },
       _count: { type: true },
@@ -61,15 +61,15 @@ export async function GET(
     const [repost, save] = await Promise.all([
       prisma.repost.findUnique({
         where: {
-          userId_postId: {
+          postId_userId: {
             userId: session.user.id,
             postId: params.id,
           },
         },
       }),
-      prisma.save.findUnique({
+      prisma.savedPost.findUnique({
         where: {
-          userId_postId: {
+          postId_userId: {
             userId: session.user.id,
             postId: params.id,
           },
