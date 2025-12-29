@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { redirect, useSearchParams } from 'next/navigation'
 import { PostCard } from '@/components/post/post-card'
@@ -43,7 +43,7 @@ interface TrendingHashtag {
 
 type TabType = 'trending' | 'latest' | 'hashtags'
 
-export default function ExplorePage() {
+function ExploreContent() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<TabType>('trending')
@@ -290,5 +290,17 @@ export default function ExplorePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-blue-600 dark:text-yellow-500 animate-spin" />
+      </div>
+    }>
+      <ExploreContent />
+    </Suspense>
   )
 }

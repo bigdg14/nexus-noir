@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/contexts/theme-context'
 import { Moon, Sun, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 
-export default function EmailVerifiedPage() {
+function VerifiedContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
@@ -150,5 +150,26 @@ export default function EmailVerifiedPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function EmailVerifiedPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-zinc-900 dark:to-black flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-8 w-full max-w-md text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+              <Loader2 className="w-10 h-10 text-blue-600 dark:text-blue-400 animate-spin" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Loading...
+          </h1>
+        </div>
+      </div>
+    }>
+      <VerifiedContent />
+    </Suspense>
   )
 }
