@@ -94,29 +94,46 @@ export async function POST(req: NextRequest) {
     // Hash password
     const hashedPassword = await hashPassword(password)
 
-    // Create user
+    // Create user (auto-verify if email not configured)
+    const autoVerify = !process.env.SMTP_USER
     const user = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
         password: hashedPassword,
         username: username.toLowerCase(),
         displayName,
-        emailVerified: false,
+        emailVerified: autoVerify,
       },
     })
 
-    // Create verification token
-    const token = await createEmailVerificationToken(user.id)
+    // Only send email if SMTP is configured
+    if (!autoVerify) {
+      try {
+        // Create verification token
+        const token = await createEmailVerificationToken(user.id)
 
-    // Send verification email
-    await sendVerificationEmail(user.email, token)
+        // Send verification email
+        await sendVerificationEmail(user.email, token)
+      } catch (emailError) {
+        console.error('Email send failed, but user created:', emailError)
+        // Auto-verify if email fails
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: true },
+        })
+      }
+    }
 
     // Record successful signup attempt
     await recordLoginAttempt(clientIp, true)
 
+    const message = autoVerify
+      ? 'Account created successfully. You can now sign in.'
+      : 'Account created successfully. Please check your email to verify your account.'
+
     return NextResponse.json(
       {
-        message: 'Account created successfully. Please check your email to verify your account.',
+        message,
         email: user.email,
       },
       { status: 201 }
