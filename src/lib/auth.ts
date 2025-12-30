@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import { prisma } from "./prisma";
 import { verifyPassword } from "./auth/password";
 import { checkRateLimit, recordLoginAttempt, clearLoginAttempts } from "./auth/rate-limit";
@@ -18,6 +19,12 @@ export const authOptions: NextAuthOptions = {
           response_type: "code"
         }
       }
+    }),
+
+    // GitHub OAuth Provider
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID || "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
     }),
 
     // Production Credentials Provider
@@ -113,8 +120,8 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Handle OAuth sign-in
-      if (account?.provider === "google") {
+      // Handle OAuth sign-in (Google and GitHub)
+      if (account?.provider === "google" || account?.provider === "github") {
         if (!user.email) {
           return false;
         }
