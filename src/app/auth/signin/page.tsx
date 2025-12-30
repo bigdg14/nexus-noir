@@ -131,9 +131,11 @@ export default function SignInPage() {
           </Button>
         </form>
 
-        {isDev && (
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-yellow-900/20 rounded-md border border-blue-100 dark:border-yellow-700/30">
-            <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">Development Mode - Test Users:</p>
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-yellow-900/20 rounded-md border border-blue-100 dark:border-yellow-700/30">
+          <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">
+            {isDev ? 'Development Mode - Test Users:' : 'Test Credentials:'}
+          </p>
+          {isDev ? (
             <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
               <li>• marcus.williams@example.com</li>
               <li>• jasmine.thompson@example.com</li>
@@ -141,8 +143,13 @@ export default function SignInPage() {
               <li>• ayesha.jackson@example.com</li>
               <li>• trevor.andrews@example.com</li>
             </ul>
-          </div>
-        )}
+          ) : (
+            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <p>Email: marcus.williams@example.com</p>
+              <p>Password: Test123!@#</p>
+            </div>
+          )}
+        </div>
 
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-600 dark:text-gray-400">
